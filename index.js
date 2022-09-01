@@ -46,7 +46,6 @@ app.get("/", (req, res) => {
         }
       })
     } else {
-      console.log("allItems:", allItems);
       res.render('list', { listTitle: "Today", itemList: allItems });
     }
   });
@@ -60,6 +59,16 @@ app.post("/", (req, res) => {
   item.save();
   res.redirect("/");
 });
+
+app.post("/delete", (req, res) => {
+  const checkedItemId = req.body.checkbox;
+  Item.findByIdAndRemove(checkedItemId, err => {
+    if (!err) {
+      console.log("Succesfully deleted the item");
+      res.redirect("/");
+    }
+  });
+})
 
 app.get("/work", (req, res) => {
   res.render('list', { listTitle: "Work List", itemList: workItems });
