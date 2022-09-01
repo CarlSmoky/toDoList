@@ -80,11 +80,20 @@ app.get("/:customListName", (req, res) => {
 
 app.post("/", (req, res) => {
   const newItem = req.body.newItem;
+  const listName = req.body.list;
   const item = new Item ({
     name: newItem
   })
-  item.save();
-  res.redirect("/");
+  if (listName === "Today") {
+    item.save();
+    res.redirect("/");
+  } else {
+    List.findOne({name: listName}, (err, result) => {
+      result.items.push(item);
+      result.save();
+      res.redirect(`/${listName}`)
+    })
+  }
 });
 
 app.post("/delete", (req, res) => {
