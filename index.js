@@ -3,7 +3,6 @@ import bodyParser from "body-parser";
 import { getDay, getDate } from './date.js';
 import mongoose from 'mongoose';
 import _ from 'lodash';
-// import getDay from './date.js';
 
 const app = express();
 
@@ -20,15 +19,15 @@ const itemsSchema = {
 const Item = mongoose.model("item", itemsSchema);
 
 const item1 = new Item({
-  name: "somethinng"
+  name: "Go shopping"
 });
 
 const item2 = new Item({
-  name: "something2"
+  name: "Buy fruit"
 });
 
 const item3 = new Item({
-  name: "something3"
+  name: "Eat fruit"
 });
 
 const defaultItems = [item1, item2, item3];
