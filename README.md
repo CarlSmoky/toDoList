@@ -1,5 +1,5 @@
 # ToDoList
-ToDoList is an app with CURD using MongoDB and mongoose.
+ToDoList is an app with CRUD using MongoDB and mongoose.
 
 ## Final Product
 
