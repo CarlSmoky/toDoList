@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from "body-parser";
 import { getDay, getDate } from './date.js';
 import mongoose from 'mongoose';
+import _ from 'lodash';
 // import getDay from './date.js';
 
 const app = express();
@@ -58,7 +59,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/:customListName", (req, res) => {
-  const customListName = req.params.customListName;
+  const customListName = _.capitalize(req.params.customListName);
   List.findOne({name: customListName}, (err, result) => {
     if (!err && !result) {
       // Create new list
@@ -98,12 +99,23 @@ app.post("/", (req, res) => {
 
 app.post("/delete", (req, res) => {
   const checkedItemId = req.body.checkbox;
-  Item.findByIdAndRemove(checkedItemId, err => {
-    if (!err) {
-      console.log("Succesfully deleted the item");
-      res.redirect("/");
-    }
-  });
+  const listName = req.body.listName;
+  if (listName === "Today") {
+    Item.findByIdAndRemove(checkedItemId, err => {
+      if (!err) {
+        console.log("Succesfully deleted the item");
+        res.redirect("/");
+      }
+    });
+  } else {
+    List.findOneAndUpdate({name: listName}, {$pull: {items: {_id: checkedItemId}}}, (err, result) => {
+      if (!err) {
+        res.redirect(`/${listName}`);
+      }
+    })
+
+  };
+  
 })
 
 
