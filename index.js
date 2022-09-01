@@ -125,8 +125,11 @@ app.post("/work", (req, res) => {
   res.redirect("/work");
 })
 
+let port = process.env.PORT;
+if (port == null || port == '') {
+  port = 3001;
+}
 
-
-app.listen(3001, (req, res) => {
-  console.log("I'm listening 3001");
+app.listen(port, (req, res) => {
+  console.log(`I'm listening ${port}`);
 })
