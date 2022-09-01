@@ -35,38 +35,30 @@ const defaultItems = [item1, item2, item3];
 let workItems = [];
 
 app.get("/", (req, res) => {
-  // const day = getDay();
   Item.find({}, (err, allItems) => {
     if (allItems.length === 0) {
       Item.insertMany(defaultItems, err => {
         if (err) {
           console.log(err);
         } else {
-          console.log("Successfully insert default data");
+          console.log("Successfully insert default items");
           res.redirect("/");
         }
       })
     } else {
       console.log("allItems:", allItems);
       res.render('list', { listTitle: "Today", itemList: allItems });
-  
     }
   });
-  // if (items.length === 0) {}
-  
 });
 
 app.post("/", (req, res) => {
-  console.log(req.body);
   const newItem = req.body.newItem;
-  if (req.body.list === "Work") {
-    workItems = [...workItems, newItem];
-    res.redirect("/work");
-  } else {
-    items = [...items, newItem];
-    res.redirect("/");
-  }
-
+  const item = new Item ({
+    name: newItem
+  })
+  item.save();
+  res.redirect("/");
 });
 
 app.get("/work", (req, res) => {
