@@ -14,25 +14,31 @@ mongoose.connect('mongodb://localhost:27017/todolistDB');
 
 const itemsSchema = {
   name: String
-}
+};
 
 const Item = mongoose.model("item", itemsSchema);
 
 const item1 = new Item({
   name: "somethinng"
-})
+});
 
 const item2 = new Item({
   name: "something2"
-})
+});
 
 const item3 = new Item({
   name: "something3"
-})
+});
 
 const defaultItems = [item1, item2, item3];
 
-let workItems = [];
+const listSchema = {
+  name: String,
+  items: [itemsSchema]
+};
+
+const List = mongoose.model("list", listSchema);
+
 
 app.get("/", (req, res) => {
   Item.find({}, (err, allItems) => {
@@ -50,6 +56,27 @@ app.get("/", (req, res) => {
     }
   });
 });
+
+app.get("/:customListName", (req, res) => {
+  const customListName = req.params.customListName;
+  List.findOne({name: customListName}, (err, result) => {
+    if (!err && !result) {
+      // Create new list
+      const list = new List({
+        name: customListName,
+        items: defaultItems
+      })
+    
+      list.save();
+      res.redirect(`/${customListName}`)
+    } else {
+      // Show an existing list
+      res.render('list', { listTitle: result.name, itemList: result.items });
+    }
+  })
+
+  
+})
 
 app.post("/", (req, res) => {
   const newItem = req.body.newItem;
@@ -70,9 +97,7 @@ app.post("/delete", (req, res) => {
   });
 })
 
-app.get("/work", (req, res) => {
-  res.render('list', { listTitle: "Work List", itemList: workItems });
-})
+
 
 app.post("/work", (req, res) => {
   const item = req.body.newItem;
