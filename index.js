@@ -1,6 +1,6 @@
 import express from 'express';
 import bodyParser from "body-parser";
-import {getDay, getDate} from './date.js';
+import { getDay, getDate } from './date.js';
 import mongoose from 'mongoose';
 // import getDay from './date.js';
 
@@ -18,34 +18,42 @@ const itemsSchema = {
 
 const Item = mongoose.model("item", itemsSchema);
 
-const item1 = new Item ({
+const item1 = new Item({
   name: "somethinng"
 })
 
-const item2 = new Item ({
+const item2 = new Item({
   name: "something2"
 })
 
-const item3 = new Item ({
+const item3 = new Item({
   name: "something3"
 })
 
 const defaultItems = [item1, item2, item3];
 
-Item.insertMany(defaultItems, err => {
-  if (err) {
-    console.log(err);
-  } else {
-    console.log("Successfully saved default items to DB");
-  }
-});
-
 let workItems = [];
 
 app.get("/", (req, res) => {
-  console.log("Here",typeof(getDay));
-  const day = getDay();
-  res.render('list', { listTitle: "Today", itemList: items});
+  // const day = getDay();
+  Item.find({}, (err, allItems) => {
+    if (allItems.length === 0) {
+      Item.insertMany(defaultItems, err => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Successfully insert default data");
+          res.redirect("/");
+        }
+      })
+    } else {
+      console.log("allItems:", allItems);
+      res.render('list', { listTitle: "Today", itemList: allItems });
+  
+    }
+  });
+  // if (items.length === 0) {}
+  
 });
 
 app.post("/", (req, res) => {
@@ -58,12 +66,12 @@ app.post("/", (req, res) => {
     items = [...items, newItem];
     res.redirect("/");
   }
-  
+
 });
 
 app.get("/work", (req, res) => {
-  res.render('list', { listTitle: "Work List", itemList: workItems});
-} )
+  res.render('list', { listTitle: "Work List", itemList: workItems });
+})
 
 app.post("/work", (req, res) => {
   const item = req.body.newItem;
